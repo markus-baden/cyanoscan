@@ -10,4 +10,12 @@ tensorflow-macos==2.8.0
 tensorflow-metal==0.4.0
 Keras==2.8.0
 tensorflow-hub==0.12.0
+planetary-computer==0.4.9
+tqdm==4.64.1
+odc-stac==0.3.5
+opencv-python==4.7.0.68
 geopandas==0.12.2
+geopy==2.3.0
+rioxarray==0.13.3
+loguru==0.6.0
+lightgbm==3.3.4
