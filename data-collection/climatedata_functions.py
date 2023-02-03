@@ -48,7 +48,7 @@ def get_ds():
 
 
 def get_ds_aws(day_date):
-    blob_container = "https://noaahrrr.blob.core.windows.net/hrrr"
+    #blob_container = "https://noaahrrr.blob.core.windows.net/hrrr"
     sector = "conus"
     yesterday = day_date
     cycle = 1 
@@ -61,24 +61,33 @@ def get_ds_aws(day_date):
     r = requests.get(f"{url}.idx")
     idx = r.text.splitlines()
     
-    sfc_temp_idx = [l for l in idx if ":TMP:surface" in l][0].split(":")
-    # Pluck the byte offset from this line, plus the beginning offset of the next line
-    line_num = int(sfc_temp_idx[0])
-    range_start = sfc_temp_idx[1]
-    # The line number values are 1-indexed, so we don't need to increment it to get the next list index,
-    # but check we're not already reading the last line
-    next_line = idx[line_num].split(':') if line_num < len(idx) else None
-    # Pluck the start of the next byte offset, or nothing if we were on the last line
-    range_end = next_line[1] if next_line else None
+    try: 
+        sfc_temp_idx = [l for l in idx if ":TMP:surface" in l][0].split(":")
+        # Pluck the byte offset from this line, plus the beginning offset of the next line
+        line_num = int(sfc_temp_idx[0])
+        range_start = sfc_temp_idx[1]
+        # The line number values are 1-indexed, so we don't need to increment it to get the next list index,
+        # but check we're not already reading the last line
+        next_line = idx[line_num].split(':') if line_num < len(idx) else None
+        # Pluck the start of the next byte offset, or nothing if we were on the last line
+        range_end = next_line[1] if next_line else None
 
-    file = tempfile.NamedTemporaryFile(prefix="tmp_", delete=False)
-    headers = {"Range": f"bytes={range_start}-{range_end}"}
-    resp = requests.get(url, headers=headers, stream=True)
-    with file as f:
-        f.write(resp.content)
-    ds = xr.open_dataset(file.name, engine='cfgrib', 
-                     backend_kwargs={'indexpath':''})
-    return ds.t.values #war das komma wichtig????
+        file = tempfile.NamedTemporaryFile(prefix="tmp_", delete=False)
+        headers = {"Range": f"bytes={range_start}-{range_end}"}
+        resp = requests.get(url, headers=headers, stream=True)
+        with file as f:
+            f.write(resp.content)
+        ds = xr.open_dataset(file.name, engine='cfgrib', 
+                         backend_kwargs={'indexpath':''})
+        return ds.t.values #war das komma wichtig????
+    except:
+        z = False
+
+
+
+
+
+
 
 #convert dates into the right format
 def get_start_date(start_date):
