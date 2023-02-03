@@ -16,7 +16,7 @@ import cfgrib #you need to install some dependencies: https://pypi.org/project/c
 def get_ds():
     blob_container = "https://noaahrrr.blob.core.windows.net/hrrr"
     sector = "conus"
-    yesterday = date.today()
+    yesterday = date.today() - timedelta(days=1)
     cycle = 12 
     forecast_hour = 1   # offset from cycle time
     product = "wrfsfcf" # 2D surface levels
@@ -47,7 +47,7 @@ def get_ds():
     return ds
 
 
-def get_temp_aws(day_date, lat, lon):
+def get_ds_aws(day_date):
     blob_container = "https://noaahrrr.blob.core.windows.net/hrrr"
     sector = "conus"
     yesterday = day_date
@@ -78,7 +78,7 @@ def get_temp_aws(day_date, lat, lon):
         f.write(resp.content)
     ds = xr.open_dataset(file.name, engine='cfgrib', 
                      backend_kwargs={'indexpath':''})
-    return ds.t.data[lat][lon]#war das komma wichtig????
+    return ds.t.values #war das komma wichtig????
 
 #convert dates into the right format
 def get_start_date(start_date):
