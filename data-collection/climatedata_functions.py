@@ -79,9 +79,9 @@ def get_ds_aws(day_date):
             f.write(resp.content)
         ds = xr.open_dataset(file.name, engine='cfgrib', 
                          backend_kwargs={'indexpath':''})
-        return ds.t.values #war das komma wichtig????
+        return ds.t.values, False #war das komma wichtig????
     except:
-        z = False
+        return 1, True
 
 
 
