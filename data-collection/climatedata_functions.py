@@ -14,6 +14,7 @@ import numpy as np
 import cfgrib #you need to install some dependencies: https://pypi.org/project/cfgrib/0.8.4.5/ and also look here https://github.com/ecmwf/eccodes-python/issues/54
 
 def get_ds():
+    """get and load grip2 data for the NOAA HRRR model"""
     blob_container = "https://noaahrrr.blob.core.windows.net/hrrr"
     sector = "conus"
     yesterday = date.today() - timedelta(days=1)
@@ -47,11 +48,11 @@ def get_ds():
     return ds
 
 
-def get_ds_aws(day_date):
-    #blob_container = "https://noaahrrr.blob.core.windows.net/hrrr"
+def get_ds_aws(day_date, cycle):
+    """ """
     sector = "conus"
     yesterday = day_date
-    cycle = 1 
+    cycle = cycle 
     forecast_hour = 1   # offset from cycle time
     product = "wrfsfcf" # 2D surface levels
     # Put it all together
