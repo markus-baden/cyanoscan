@@ -13,6 +13,12 @@ import numpy as np
 # Not used directly, but used via xarray
 import cfgrib #you need to install some dependencies: https://pypi.org/project/cfgrib/0.8.4.5/ and also look here https://github.com/ecmwf/eccodes-python/issues/54
 
+
+def convert_str_to_list(data, features):
+    for feature in features : 
+        data[feature]=data[feature].apply(lambda x: [ replace_nan(X) for X in x.replace("nan"," ").split(",")])
+    return data
+
 def get_ds():
     """get and load grip2 data for the NOAA HRRR model"""
     blob_container = "https://noaahrrr.blob.core.windows.net/hrrr"
@@ -48,8 +54,49 @@ def get_ds():
     return ds
 
 
-def get_ds_aws(day_date, cycle):
-    """ """
+# def get_ds_aws_tarray(day_date, cycle):
+#     """get and load grip2 data for the NOAA HRRR model from aws"""
+#     sector = "conus"
+#     yesterday = day_date
+#     cycle = cycle 
+#     forecast_hour = 1   # offset from cycle time
+#     product = "wrfsfcf" # 2D surface levels
+#     # Put it all together
+#     file_path = f"hrrr.t{cycle:02}z.{product}{forecast_hour:02}.grib2"
+#     url = f"https://noaa-hrrr-bdp-pds.s3.amazonaws.com/hrrr.{yesterday:%Y%m%d}/{sector}/{file_path}"
+
+#     r = requests.get(f"{url}.idx")
+#     idx = r.text.splitlines()
+    
+#     try: 
+#         sfc_temp_idx = [l for l in idx if ":TMP:surface" in l][0].split(":")
+#         # Pluck the byte offset from this line, plus the beginning offset of the next line
+#         line_num = int(sfc_temp_idx[0])
+#         range_start = sfc_temp_idx[1]
+#         # The line number values are 1-indexed, so we don't need to increment it to get the next list index,
+#         # but check we're not already reading the last line
+#         next_line = idx[line_num].split(':') if line_num < len(idx) else None
+#         # Pluck the start of the next byte offset, or nothing if we were on the last line
+#         range_end = next_line[1] if next_line else None
+
+#         file = tempfile.NamedTemporaryFile(prefix="tmp_", delete=False)
+#         headers = {"Range": f"bytes={range_start}-{range_end}"}
+#         resp = requests.get(url, headers=headers, stream=True)
+#         with file as f:
+#             f.write(resp.content)
+#         ds = xr.open_dataset(file.name, engine='cfgrib', 
+#                          backend_kwargs={'indexpath':''})
+#         return ds.t.values, False #war das komma wichtig????
+#     except:
+#         return 1, True
+
+
+def get_ds_aws_array(day_date, cycle, param_layer, forecast_param):
+    """get and load grip2 data for the NOAA HRRR model from aws, 
+    returns an array with just the specified parameter"""
+    
+    param_layer = param_layer
+    forecast_param = forecast_param
     sector = "conus"
     yesterday = day_date
     cycle = cycle 
@@ -61,9 +108,9 @@ def get_ds_aws(day_date, cycle):
 
     r = requests.get(f"{url}.idx")
     idx = r.text.splitlines()
-    
+
     try: 
-        sfc_temp_idx = [l for l in idx if ":TMP:surface" in l][0].split(":")
+        sfc_temp_idx = [l for l in idx if param_layer in l][0].split(":")
         # Pluck the byte offset from this line, plus the beginning offset of the next line
         line_num = int(sfc_temp_idx[0])
         range_start = sfc_temp_idx[1]
@@ -80,11 +127,9 @@ def get_ds_aws(day_date, cycle):
             f.write(resp.content)
         ds = xr.open_dataset(file.name, engine='cfgrib', 
                          backend_kwargs={'indexpath':''})
-        return ds.t.values, False #war das komma wichtig????
+        return ds[forecast_param].values, False 
     except:
         return 1, True
-
-
 
 
 
