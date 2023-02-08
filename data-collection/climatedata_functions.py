@@ -24,7 +24,7 @@ def get_ds():
     blob_container = "https://noaahrrr.blob.core.windows.net/hrrr"
     sector = "conus"
     yesterday = date.today() - timedelta(days=1)
-    cycle = 12 
+    cycle = 17 
     forecast_hour = 1   # offset from cycle time
     product = "wrfsfcf" # 2D surface levels
     # Put it all together
