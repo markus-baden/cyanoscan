@@ -1,23 +1,36 @@
 from datetime import date, timedelta, datetime
-import io
 import pandas as pd
 import xarray as xr
 import requests
-import cartopy.crs as ccrs
-import cartopy.feature as cfeature
-import matplotlib.pyplot as plt
+#import cartopy.crs as ccrs
+#import cartopy.feature as cfeature
+#import matplotlib.pyplot as plt
 import cmocean
 import tempfile
 import numpy as np
 
 # Not used directly, but used via xarray
-import cfgrib #you need to install some dependencies: https://pypi.org/project/cfgrib/0.8.4.5/ and also look here https://github.com/ecmwf/eccodes-python/issues/54
+#import cfgrib #you need to install some dependencies: https://pypi.org/project/cfgrib/0.8.4.5/ and also look here https://github.com/ecmwf/eccodes-python/issues/54
 
+def join_time_values(a, b, c, d):
+    result = [0] * (len(a) + len(b) + len(c) + len(d))
+    result[::4]  = a[::-1]
+    result[1::4] = b[::-1]
+    result[2::4] = c[::-1]
+    result[3::4] = d[::-1]
+    return result
+
+def replace_nan(x):
+    if x=="nan":
+        return np.nan
+    else :
+        return float(x)
 
 def convert_str_to_list(data, features):
     for feature in features : 
-        data[feature]=data[feature].apply(lambda x: [ replace_nan(X) for X in x.replace("nan"," ").split(",")])
+        data[feature]=data[feature].apply(lambda x: [ replace_nan(X) for X in x.strip('[]').split(",")])
     return data
+
 
 def get_ds():
     """get and load grip2 data for the NOAA HRRR model"""
