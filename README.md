@@ -14,3 +14,9 @@ source .venv/bin/activate
 pip install --upgrade pip
 pip install -r requirements.txt
 ```
+
+## Installing cfgrib (Climate data notebook)
+
+brew install eccodes 
+pip install eccodes
+pip install ecmwflibs
