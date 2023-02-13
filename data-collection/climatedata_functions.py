@@ -26,9 +26,14 @@ def replace_nan(x):
     else :
         return float(x)
 
+def convert_to_str(data, features):
+    for feature in features : 
+        data[feature]=data[feature].apply([str])
+    return data
+
 def convert_str_to_list(data, features):
     for feature in features : 
-        data[feature]=data[feature].apply(lambda x: [ replace_nan(X) for X in x.strip('[]').split(",")])
+        data[feature]=data[feature].apply(to)
     return data
 
 
@@ -102,6 +107,8 @@ def get_ds():
 #         return ds.t.values, False #war das komma wichtig????
 #     except:
 #         return 1, True
+
+
 
 
 def get_ds_aws_array(day_date, cycle, param_layer, forecast_param):
