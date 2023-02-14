@@ -12,6 +12,13 @@ import numpy as np
 # Not used directly, but used via xarray
 #import cfgrib #you need to install some dependencies: https://pypi.org/project/cfgrib/0.8.4.5/ and also look here https://github.com/ecmwf/eccodes-python/issues/54
 
+def join_time_values_three(a, b, c):
+    result = [0] * (len(a) + len(b) + len(c))
+    result[::3]  = a[::-1]
+    result[1::3] = b[::-1]
+    result[2::3] = c[::-1]
+    return result
+
 def join_time_values(a, b, c, d):
     result = [0] * (len(a) + len(b) + len(c) + len(d))
     result[::4]  = a[::-1]
@@ -33,7 +40,7 @@ def convert_to_str(data, features):
 
 def convert_str_to_list(data, features):
     for feature in features : 
-        data[feature]=data[feature].apply(to)
+        data[feature]=data[feature].apply(lambda x: [ replace_nan(X) for X in x.strip('[]').split(",")])
     return data
 
 
