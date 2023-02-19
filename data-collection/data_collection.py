@@ -77,7 +77,8 @@ def get_date_range(date, time_buffer_days=15):
     and time_buffer_days days prior
 
     Returns a string"""
-    datetime_format = "%Y-%m-%dT"
+    #datetime_format = "%Y-%m-%dT"
+    datetime_format = "%Y-%m-%d"    # fix for newer version of "pystac_client"
     range_start = pd.to_datetime(date) - timedelta(days=time_buffer_days)
     date_range = f"{range_start.strftime(datetime_format)}/{pd.to_datetime(date).strftime(datetime_format)}"
 
